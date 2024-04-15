@@ -1,0 +1,194 @@
+plugins {
+    id 'java'
+//    id 'application'
+}
+
+//group 'com.example'
+//version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    junitVersion = '5.8.2'
+}
+
+sourceCompatibility = '11'
+targetCompatibility = '11'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.testng/testng
+    testImplementation group: 'org.testng', name: 'testng', version: '7.4.0'
+//    testCompile group: 'org.testng', name: 'testng', version:'7.9.0'
+//    testCompile fileTree('lib')
+    testImplementation group: 'io.cucumber', name: 'cucumber-java', version: '7.16.1'
+    testImplementation group: 'io.cucumber', name: 'cucumber-junit', version: '7.16.1'
+// https://mvnrepository.com/artifact/io.cucumber/cucumber-java
+    implementation group: 'io.cucumber', name: 'cucumber-java', version: '7.16.1'
+    // https://mvnrepository.com/artifact/io.cucumber/cucumber-testng
+    implementation group: 'io.cucumber', name: 'cucumber-testng', version: '7.16.0'
+// https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.19.1'
+// https://mvnrepository.com/artifact/commons-io/commons-io
+    implementation group: 'commons-io', name: 'commons-io', version: '2.15.1'
+// https://mvnrepository.com/artifact/io.cucumber/cucumber-picocontainer
+    implementation group: 'io.cucumber', name: 'cucumber-picocontainer', version: '7.16.1'
+
+    // Logging
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.12'
+    // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.3'
+
+// Extent reports
+    // https://mvnrepository.com/artifact/com.vimalselvam/cucumber-extentsreport
+    implementation group: 'com.vimalselvam', name: 'cucumber-extentsreport', version: '3.1.1'
+    // https://mvnrepository.com/artifact/com.aventstack/extentreports
+    implementation group: 'com.aventstack', name: 'extentreports', version: '5.1.1'
+    // https://mvnrepository.com/artifact/tech.grasshopper/extentreports-cucumber7-adapter
+    implementation group: 'tech.grasshopper', name: 'extentreports-cucumber7-adapter', version: '1.14.0'
+}
+
+
+test {
+    useTestNG {
+        suites "src/test/resources/testng.xml"
+        //includeGroups 'smoke'
+    }
+}
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+
+    task cucumberCli() {
+    dependsOn assemble, testClasses
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            args = [
+                    '--plugin', 'pretty',
+                    '--plugin', 'html:test-output/CucumberReport/cucumber-cli-report.html',
+                    '--plugin', 'com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:',
+                    '--threads', '2',
+                    '--glue', 'org.citysprint.cityDespatchSteps',
+                    'src/test/resources/org.citysprint.qa.features']
+        }
+    }
+}
+
+//plugins {
+//    // Apply the application plugin to add support for building a CLI application in Java.
+//    id 'java'
+//    id 'application'
+//    id 'io.qameta.allure' version '2.11.2'
+//}
+//
+//
+//repositories {
+//    mavenCentral()
+//    maven {
+//        url = uri("https://plugins.gradle.org/m2/")
+//    }
+//}
+
+//project.ext {
+//    cucumberVersion = '7.2.3'
+//}
+
+//dependencies {
+//    // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
+//    implementation 'org.seleniumhq.selenium:selenium-java:4.11.0'
+//
+//    implementation group: 'io.appium', name: 'java-client', version: '8.3.0'
+//
+//    implementation 'com.konghq:unirest-java:3.14.2'
+//    implementation 'sc.tyro:ashot-screenshot-provider:1.1.0'
+////    implementation 'io.github.longphamduc:courgette-jvm:1.0.9'
+//
+////    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.9.2'
+////    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.9.2'
+//
+////    testImplementation 'io.cucumber:cucumber-java:7.11.1'
+////    testImplementation 'io.cucumber:cucumber-junit:7.11.1'
+//    testImplementation 'io.cucumber:cucumber-java:7.2.3'
+//    testImplementation 'io.cucumber:cucumber-junit:7.2.3'
+//
+//    //Extent reports
+//    // https://mvnrepository.com/artifact/com.vimalselvam/cucumber-extentsreport
+//    implementation group: 'com.vimalselvam', name: 'cucumber-extentsreport', version: '3.1.1'
+//    // https://mvnrepository.com/artifact/com.aventstack/extentreports
+//    implementation group: 'com.aventstack', name: 'extentreports', version: '5.0.9'
+//    // https://mvnrepository.com/artifact/org.junit.vintage/junit-vintage-engine
+//    testImplementation group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.9.2'
+//    // https://mvnrepository.com/artifact/tech.grasshopper/extentreports-cucumber7-adapter
+//    implementation group: 'tech.grasshopper', name: 'extentreports-cucumber7-adapter', version: '1.14.0'
+//
+//    //implementation group: 'tech.grasshopper', name: 'extentreports-cucumber7-adapter', version: '1.10.1'// https://mvnrepository.com/artifact/tech.grasshopper/extentreports-cucumber7-adapter
+//
+//// https://mvnrepository.com/artifact/ru.yandex.qatools.ashot/ashot
+//    implementation group: 'ru.yandex.qatools.ashot', name: 'ashot', version: '1.5.4'
+//
+//    //Cucumber Report Services
+//// https://mvnrepository.com/artifact/io.cucumber/cucumber-jvm
+//    implementation group: 'io.cucumber', name: 'cucumber-jvm', version: '7.12.0', ext: 'pom'
+//    // https://mvnrepository.com/artifact/net.masterthought/cucumber-reporting
+//    implementation group: 'net.masterthought', name: 'cucumber-reporting', version: '5.7.5'
+//// https://mvnrepository.com/artifact/net.masterthought/maven-cucumber-reporting
+//    implementation group: 'net.masterthought', name: 'maven-cucumber-reporting', version: '5.7.5'
+//    // https://mvnrepository.com/artifact/info.cukes/cucumber-junit
+//    testImplementation group: 'info.cukes', name: 'cucumber-junit', version: '1.2.6', ext: 'pom'
+//    // https://mvnrepository.com/artifact/de.monochromata.cucumber/reporting-plugin
+//    implementation group: 'de.monochromata.cucumber', name: 'reporting-plugin', version: '5.0.0'
+//// https://mvnrepository.com/artifact/me.jvt.cucumber/reporting-plugin
+//    implementation group: 'me.jvt.cucumber', name: 'reporting-plugin', version: '7.11.0'
+//
+//    //Allure reports
+//// https://mvnrepository.com/artifact/io.qameta.allure/allure-cucumber7-jvm
+//    implementation group: 'io.qameta.allure', name: 'allure-cucumber7-jvm', version: '2.22.0'
+//// https://mvnrepository.com/artifact/io.qameta.allure/allure-junit4
+//    testImplementation group: 'io.qameta.allure', name: 'allure-junit5', version: '2.22.0'
+//    // https://mvnrepository.com/artifact/io.qameta.allure/allure-maven
+//    implementation group: 'io.qameta.allure', name: 'allure-maven', version: '2.12.0'
+//
+//    // https://mvnrepository.com/artifact/org.aspectj/aspectjweaver
+//    runtimeOnly group: 'org.aspectj', name: 'aspectjweaver', version: '1.9.19'
+//
+//    // https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin
+//    implementation group: 'org.apache.maven.plugins', name: 'maven-surefire-plugin', version: '3.1.0'
+//    // https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-failsafe-plugin
+//    testImplementation group: 'org.apache.maven.plugins', name: 'maven-failsafe-plugin', version: '3.1.0'
+//
+//
+//    // https://mvnrepository.com/artifact/io.cucumber/cucumber-junit-platform-engine
+////    testImplementation group: 'io.cucumber', name: 'cucumber-junit-platform-engine', version: '7.12.0'
+//
+//    //TestNG dependencies
+//    // https://mvnrepository.com/artifact/org.testng/testng
+//
+////    testImplementation group: 'org.testng', name: 'testng', version: '7.8.0'
+//    testImplementation group: 'org.testng', name: 'testng', version: '6.14.3'
+//
+////// https://mvnrepository.com/artifact/io.cucumber/cucumber-testng
+//    implementation group: 'io.cucumber', name: 'cucumber-testng', version: '7.12.0'
+//}
+//configurations {
+//    cucumberRuntime {
+//        extendsFrom testImplementation
+//    }
+//}
+//
+//test {
+//    useTestNG {
+//        suites "src/test/resources/testng.xml"
+//        includeGroups 'smoke'
+//    }
+//
+//}
